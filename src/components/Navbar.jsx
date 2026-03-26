@@ -246,14 +246,14 @@ export default function Navbar({ title = 'Campus Service' }) {
       .finally(() => setProfileLoad(false));
   }, [profileOpen]);
 
-  const resetForms = () => { 
-    setEditMode(false); 
-    setEditForm({ 
-      username: profile?.username || user?.username || '', 
-      fullName: profile?.fullName || user?.fullName || '', 
-      email: profile?.email || user?.email || '', 
-      password: '' 
-    }); 
+  const resetForms = () => {
+    setEditMode(false);
+    setEditForm({
+      username: profile?.username || user?.username || '',
+      fullName: profile?.fullName || user?.fullName || '',
+      email: profile?.email || user?.email || '',
+      password: ''
+    });
   };
 
   useEffect(() => {
@@ -272,21 +272,25 @@ export default function Navbar({ title = 'Campus Service' }) {
         fullName: editForm.fullName,
         email: editForm.email
       };
-      if (editForm.password) {
-        payload.password = editForm.password;
+      if (editForm.password && editForm.password.trim() !== '') {
+        payload.password = editForm.password.trim();
       }
-      
+
       const res = await api.put(`/${roleEndpoint}/${user.userId}`, payload);
       const updatedProfile = res.data || payload;
-      
-      localStorage.setItem('username', updatedProfile.username || editForm.username);
-      localStorage.setItem('email', updatedProfile.email || editForm.email);
-      localStorage.setItem('fullName', updatedProfile.fullName || editForm.fullName);
-      
+
+      const newU = updatedProfile.username || editForm.username;
+      const newE = updatedProfile.email || editForm.email;
+      const newF = updatedProfile.fullName || editForm.fullName;
+
+      if (newU && newU !== 'undefined') localStorage.setItem('username', newU);
+      if (newE && newE !== 'undefined') localStorage.setItem('email', newE);
+      if (newF && newF !== 'undefined') localStorage.setItem('fullName', newF);
+
       updateUser({
-        username: updatedProfile.username || editForm.username,
-        email: updatedProfile.email || editForm.email,
-        fullName: updatedProfile.fullName || editForm.fullName
+        username: newU,
+        email: newE,
+        fullName: newF
       });
 
       setProfile(p => ({ ...p, ...updatedProfile, password: undefined }));
@@ -333,7 +337,7 @@ export default function Navbar({ title = 'Campus Service' }) {
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 32px', zIndex: 100,
     }}>
-      <h2 
+      <h2
         onClick={() => navigate('/')}
         style={{ fontSize: 17, fontFamily: 'var(--font-head)', fontWeight: 700, cursor: 'pointer' }}
       >
@@ -493,9 +497,9 @@ export default function Navbar({ title = 'Campus Service' }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <span style={{ fontSize: 14, fontWeight: 600 }}>Profile Details</span>
                   <button onClick={() => {
-                      if (editMode) resetForms();
-                      else setEditMode(true);
-                    }}
+                    if (editMode) resetForms();
+                    else setEditMode(true);
+                  }}
                     style={{ fontSize: 12, color: 'var(--accent)', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}>
                     {editMode ? 'Cancel' : 'Edit Profile'}
                   </button>
@@ -527,6 +531,7 @@ export default function Navbar({ title = 'Campus Service' }) {
                       <label style={{ fontSize: 11, color: 'var(--text3)', marginBottom: 4, display: 'block' }}>New Password (Optional)</label>
                       <input type="password" className="input" placeholder="Leave blank to keep current"
                         value={editForm.password} onChange={e => setEditForm({ ...editForm, password: e.target.value })}
+                        autoComplete="new-password"
                         style={{ width: '100%', fontSize: 13, padding: '8px 12px' }} />
                     </div>
                     <button className="btn btn-primary w-full" onClick={handleUpdateProfile} disabled={saving} style={{ justifyContent: 'center', marginTop: 8 }}>
