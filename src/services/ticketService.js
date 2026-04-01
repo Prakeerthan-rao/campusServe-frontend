@@ -1,11 +1,14 @@
 import api from './api';
 
 const ticketService = {
+  // Public (no auth needed)
+  getAllDepartments:   ()           => api.get('/departments'),   // ✅ changed from /admin/departments
+
   // Student
-  createTicket:    (data) => api.post('/tickets', data),
-  getMyTickets:    ()     => api.get('/tickets/my'),
-  getTicketById:   (id)   => api.get(`/tickets/${id}`),
-  closeTicket:     (id)   => api.patch(`/tickets/${id}/close`),
+  createTicket:       (data)       => api.post('/tickets', data),
+  getMyTickets:       ()           => api.get('/tickets/my'),
+  getTicketById:      (id)         => api.get(`/tickets/${id}`),
+  closeTicket:        (id)         => api.patch(`/tickets/${id}/close`),
 
   // Staff
   getAssignedTickets: ()           => api.get('/tickets/assigned'),
@@ -15,10 +18,8 @@ const ticketService = {
   getAllTickets:       (status)     => api.get('/tickets', { params: status ? { status } : {} }),
   deleteTicket:       (id)         => api.delete(`/tickets/${id}`),
   getDashboard:       ()           => api.get('/admin/dashboard'),
-  getAllDepartments:   ()           => api.get('/admin/departments'),
+  getAdminDepartments: ()          => api.get('/admin/departments'), // kept for admin use
   getTicketsByDept:   (deptId)     => api.get(`/admin/tickets/department/${deptId}`),
-
-  // Staff list (for assignment)
   getAllStaff:         ()           => api.get('/staff'),
 };
 
